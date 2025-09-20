@@ -32,6 +32,15 @@ def sepia(image: ImageFile.ImageFile) -> Image.Image:
             processed_image.putpixel((x, y), (a, b, c))
     return processed_image
 
+def negative(image: ImageFile.ImageFile) -> Image.Image:
+    processed_image = Image.new("RGB", image.size)
+    (width, height) = image.size
+    for x in range(width):
+        for y in range(height):
+            (r, g, b) = image.getpixel((x, y))
+            processed_image.putpixel((x, y), (255 - r, 255 - g, 255 - b))
+    return processed_image
+
 def main(transform: Callable[[ImageFile.ImageFile], Image.Image]):
     shrek_image = os.path.join(RESOURCES_DIR, "shrek.jpg")
     with Image.open(shrek_image) as image:
@@ -41,8 +50,8 @@ def main(transform: Callable[[ImageFile.ImageFile], Image.Image]):
 
 
 if __name__ == "__main__":
-    transforms = (shades_of_gray, sepia,)
+    transforms = (shades_of_gray, sepia, negative)
     try:
-        main(transforms[1])
+        main(transforms[2])
     except Exception as exception:
         print(f"Error occured: {exception}", file=sys.stderr)
