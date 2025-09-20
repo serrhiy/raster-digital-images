@@ -17,6 +17,7 @@ def shades_of_gray(image: ImageFile.ImageFile) -> Image.Image:
             processed_image.putpixel((x, y), (avg, avg, avg))
     return processed_image
 
+
 def sepia(image: ImageFile.ImageFile) -> Image.Image:
     DEPTH = 30
 
@@ -32,6 +33,7 @@ def sepia(image: ImageFile.ImageFile) -> Image.Image:
             processed_image.putpixel((x, y), (a, b, c))
     return processed_image
 
+
 def negative(image: ImageFile.ImageFile) -> Image.Image:
     processed_image = Image.new("RGB", image.size)
     (width, height) = image.size
@@ -40,6 +42,7 @@ def negative(image: ImageFile.ImageFile) -> Image.Image:
             (r, g, b) = image.getpixel((x, y))
             processed_image.putpixel((x, y), (255 - r, 255 - g, 255 - b))
     return processed_image
+
 
 def noise(image: ImageFile.ImageFile) -> Image.Image:
     FACTOR = 60
@@ -60,6 +63,26 @@ def noise(image: ImageFile.ImageFile) -> Image.Image:
             processed_image.putpixel((x, y), tuple(color))
     return processed_image
 
+
+def brightness_change(image: ImageFile.ImageFile) -> Image.Image:
+    FACTOR = 60
+
+    processed_image = Image.new("RGB", image.size)
+    (width, height) = image.size
+    for x in range(width):
+        for y in range(height):
+            (r, g, b) = image.getpixel((x, y))
+
+            color = [r + FACTOR, g + FACTOR, b + FACTOR]
+            for index, gradient in enumerate(color):
+                if gradient < 0:
+                    color[index] = 0
+                elif gradient > 255:
+                    color[index] = 255
+            processed_image.putpixel((x, y), tuple(color))
+    return processed_image
+
+
 def main(transform: Callable[[ImageFile.ImageFile], Image.Image]):
     shrek_image = os.path.join(RESOURCES_DIR, "shrek.jpg")
     with Image.open(shrek_image) as image:
@@ -69,8 +92,8 @@ def main(transform: Callable[[ImageFile.ImageFile], Image.Image]):
 
 
 if __name__ == "__main__":
-    transforms = (shades_of_gray, sepia, negative, noise)
+    transforms = (shades_of_gray, sepia, negative, noise, brightness_change)
     try:
-        main(transforms[3])
+        main(transforms[4])
     except Exception as exception:
         print(f"Error occured: {exception}", file=sys.stderr)
